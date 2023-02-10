@@ -1,19 +1,19 @@
-12 user(s) a créer
+11 utilisateur(s) à créer
 essaie username: mgauthier
 mgauthier peut etre utiliser!
-something wrong occured while creating user 'mgauthier'
+Utilisateur 'mgauthier' à été creé avec succes
 essaie username: mgauthier
 mgauthier existe deja
 essaie username: magauthier
 magauthier peut etre utiliser!
-something wrong occured while creating user 'magauthier'
+Utilisateur 'magauthier' à été creé avec succes
 essaie username: mgauthier
 mgauthier existe deja
 essaie username: magauthier
 magauthier existe deja
 essaie username: margauthier
 margauthier peut etre utiliser!
-something wrong occured while creating user 'margauthier'
+Utilisateur 'margauthier' à été creé avec succes
 essaie username: mgauthier
 mgauthier existe deja
 essaie username: magauthier
@@ -22,7 +22,7 @@ essaie username: margauthier
 margauthier existe deja
 essaie username: marigauthier
 marigauthier peut etre utiliser!
-something wrong occured while creating user 'marigauthier'
+Utilisateur 'marigauthier' à été creé avec succes
 essaie username: mgauthier
 mgauthier existe deja
 essaie username: magauthier
@@ -31,7 +31,7 @@ essaie username: margauthier
 margauthier existe deja
 essaie username: martgauthier
 martgauthier peut etre utiliser!
-something wrong occured while creating user 'martgauthier'
+Utilisateur 'martgauthier' à été creé avec succes
 essaie username: mgauthier
 mgauthier existe deja
 essaie username: magauthier
@@ -42,19 +42,19 @@ essaie username: martgauthier
 martgauthier existe deja
 essaie username: martigauthier
 martigauthier peut etre utiliser!
-something wrong occured while creating user 'martigauthier'
+Utilisateur 'martigauthier' à été creé avec succes
 essaie username: mgauthier
 mgauthier existe deja
 essaie username: migauthier
 migauthier peut etre utiliser!
-something wrong occured while creating user 'migauthier'
+Utilisateur 'migauthier' à été creé avec succes
 essaie username: mgauthier
 mgauthier existe deja
 essaie username: migauthier
 migauthier existe deja
 essaie username: micgauthier
 micgauthier peut etre utiliser!
-something wrong occured while creating user 'micgauthier'
+Utilisateur 'micgauthier' à été creé avec succes
 essaie username: mgauthier
 mgauthier existe deja
 essaie username: migauthier
@@ -63,7 +63,7 @@ essaie username: micgauthier
 micgauthier existe deja
 essaie username: michgauthier
 michgauthier peut etre utiliser!
-something wrong occured while creating user 'michgauthier'
+Utilisateur 'michgauthier' à été creé avec succes
 essaie username: mgauthier
 mgauthier existe deja
 essaie username: migauthier
@@ -74,19 +74,12 @@ essaie username: michgauthier
 michgauthier existe deja
 essaie username: michegauthier
 michegauthier peut etre utiliser!
-something wrong occured while creating user 'michegauthier'
+Utilisateur 'michegauthier' à été creé avec succes
 essaie username: ptremblay
 ptremblay peut etre utiliser!
-something wrong occured while creating user 'ptremblay'
+Utilisateur 'ptremblay' à été creé avec succes
 essaie username: ptremblay
 ptremblay existe deja
 essaie username: pitremblay
 pitremblay peut etre utiliser!
-something wrong occured while creating user 'pitremblay'
-essaie username: ptremblay
-ptremblay existe deja
-essaie username: pitremblay
-pitremblay existe deja
-essaie username: pietremblay
-pietremblay peut etre utiliser!
-something wrong occured while creating user 'pietremblay'
+Utilisateur 'pitremblay' à été creé avec succes

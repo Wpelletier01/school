@@ -2,21 +2,38 @@
 
 
 # CONST
+# pour une question de lisibilité
 TRUE=1
 FALSE=0
 
 
-log() {
-    printf '%s\n' "$@" >> devoir_1.log
+# s'assure que le fichier log existe avent d'essayer de le detruire
+clear_log() {
+  
+  if [ -e devoir_1.log ]
+  then
+    
+    rm devoir_1.log 
+
+  fi 
+  
 }
 
+# ajoute le log passer a  la fin du fichier
+log() {
 
+    printf '%s\n' "$@" >> devoir_1.log
+
+}
+
+# le script
 main() {  
 
   # s'assure qu'un seul argument est passé
   if [ $# -le 0 -o $# -ge 2 ] 
   then
-    echo "Vous avez besoin de passé un fichier seulement en argument"
+    echo "Vous avez besoin de passé un fichier minimun en argument"
+    echo "Example: dev1.sh [nom du fichier]"
     exit -1 
   fi
   
@@ -24,7 +41,8 @@ main() {
   if [ ! -e $1 ] 
   then 
   
-    echo "le fichier passé en argument n'existe pas"
+    echo "Le fichier passé en argument n'existe pas"
+    echo "Assurez-vous que le fichier se retrouve dans le meme dossier sinon entrer le chemin complet"
     exit -1
   fi 
   
@@ -32,7 +50,7 @@ main() {
   nb_lines=$(cat $1 | wc -l)
  
   
-  log "$nb_lines user(s) a créer"
+  log "$nb_lines utilisateur(s) à créer"
 
   for (( i=0; i <= $nb_lines; i++ ))
   do 
@@ -52,11 +70,11 @@ main() {
     # créé un nouveau utilisateur sans un group et un home directory
     useradd -N -M $username
     
-    if [[ " $( get_existing_user ) " =~ " ${nuser} " ]] 
+    if [[ " $( get_existing_user ) " =~ " ${username} " ]] 
     then 
-      log "user $username a ete creer avec succes"
+      log "Utilisateur '$username' à été creé avec succes"
     else 
-      log "something wrong occured while creating user '$username'"
+      log "Incapable de creer l'utilisateur '$username'"
 
     fi 
    
@@ -67,14 +85,13 @@ main() {
 
   
 
-
+# retourne tout les utilisateurs présent dans la machine
 get_existing_user() {
 
   
   list_user=$( cut -d: -f1 /etc/passwd ) 
   
   echo ${list_user[@]}
-
 
 }
 
@@ -95,29 +112,28 @@ get_valid_username() {
     
     username=$( echo "${first:0:$i+1}$last" |  tr '[:upper:]' '[:lower:]' )
     
-    log "essaie username: $username"
+    log "Essaie le nom d'utilisteur: $username"
 
 
     if [[ " $( get_existing_user )  " =~ " ${username} " ]] 
     then 
       
-      log "$username existe deja"
+      log "Un utilisateur avec le nom $username existe déja"
       
     else 
 
-      log "$username peut etre utiliser!"
+      log "$username peut être utilisé!"
       valid=$TRUE
 
       break
     fi 
 
   done
-  #
-  #
-  # La prochaine condition est la pour les cas où aucun username est en utilisant une sous-partie
-  # du prenom. Dans ses cas, le nom et le prenom sera concaniser et on ajoutera un numero à la fin 
-  # du username 
-  #
+  
+
+  # La prochaine condition est la pour les cas où aucun nom d'utilisateur disponible est disponible 
+  # en utilisant une sous-partie du prenom. Dans ses cas, le nom et le prenom sera concaniser et on
+  # ajoutera un numero à la fin du utilisteur  
   #
   if [ "$valid" == "$FALSE" ]
   then
@@ -135,10 +151,10 @@ get_valid_username() {
       if [[ " $( get_existing_user ) " =~ " ${nuser} " ]]  
       then
         
-        log "$nuser existe deja"
+        log "Un utilisateur avec le nom $nuser existe déja"
       else 
         
-        log "$nuser peut etre utiliser"
+        log "le nom d'utilisateur $nuser peut être utilisé"
         
         # on veux pas que la valeur 0 soit ajouter a la fin
         if [ '$x' != "0" ] 
@@ -165,18 +181,6 @@ get_valid_username() {
 
 
 
-test() {
-  
-  rm devoir_1.log
-
-  
-  
-  
-  
-
-}
-
-
-rm devoir_1.log
+clear_log 
 
 main $@
