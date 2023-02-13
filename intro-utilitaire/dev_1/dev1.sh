@@ -1,31 +1,9 @@
 # /bin/bash
-
-
+#
 # CONST
-# pour une question de lisibilité
 TRUE=1
 FALSE=0
-
-
-# s'assure que le fichier log existe avent d'essayer de le detruire
-clear_log() {
-  
-  if [ -e devoir_1.log ]
-  then
-    
-    rm devoir_1.log 
-
-  fi 
-  
-}
-
-# ajoute le log passer a  la fin du fichier
-log() {
-
-    printf '%s\n' "$@" >> devoir_1.log
-
-}
-
+#
 # le script
 main() {  
 
@@ -64,7 +42,9 @@ main() {
 
   for (( i=0; i <= $nb_lines; i++ ))
   do 
-     
+    
+    log "<----------------------------------"
+
     # capture une ligne
     line=$( tail -n +$i $1 | head -n 1 )
     
@@ -90,7 +70,26 @@ main() {
    
   done   
 
-} 
+}
+#
+# s'assure que le fichier log existe avent d'essayer de le detruire
+clear_log() {
+  
+  if [ -e devoir_1.log ]
+  then
+    
+    rm devoir_1.log 
+
+  fi 
+  
+}
+#
+# ajoute le log passer a  la fin du fichier
+log() {
+
+    printf '%s\n' "$@" >> devoir_1.log
+
+}
 #
 # regarde si le script est executer en tant que root user 
 is_root() {
@@ -113,9 +112,7 @@ get_existing_user() {
   echo ${list_user[@]}
 
 }
-
-
-
+#
 # créer un nom d'utilisateur avec le prenom et nom passés en parametre 
 get_valid_username() {
 
@@ -150,12 +147,13 @@ get_valid_username() {
   done
   
 
-  # La prochaine condition est la pour les cas où aucun nom d'utilisateur disponible est disponible 
+  # La prochaine condition est la pour les cas où aucun nom d'utilisateur est disponible 
   # en utilisant une sous-partie du prenom. Dans ses cas, le nom et le prenom sera concaniser et on
   # ajoutera un numero à la fin du utilisteur  
   #
   if [ "$valid" == "$FALSE" ]
   then
+
     x=0
     
     username="$first$last"
@@ -165,8 +163,6 @@ get_valid_username() {
     
       nuser="$username$x"
       
-
-
       if [[ " $( get_existing_user ) " =~ " ${nuser} " ]]  
       then
         
@@ -192,13 +188,13 @@ get_valid_username() {
     done 
   fi
 
-   
+  # retourne le nom d'utilisateur  
   echo $username
 
 }
-
-
-
+#
+#
+# Ceci sera executer
 
 clear_log 
 
