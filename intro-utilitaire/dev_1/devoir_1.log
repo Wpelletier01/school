@@ -1,4 +1,4 @@
-11 utilisateur(s) à créer
+12 utilisateur(s) à créer
 <----------------------------------
 Essaie le nom d'utilisteur: mgauthier
 mgauthier peut être utilisé!
@@ -95,3 +95,11 @@ Un utilisateur avec le nom ptremblay existe déja
 Essaie le nom d'utilisteur: pitremblay
 pitremblay peut être utilisé!
 Utilisateur 'pitremblay' à été creé avec succes
+<----------------------------------
+Essaie le nom d'utilisteur: ptremblay
+Un utilisateur avec le nom ptremblay existe déja
+Essaie le nom d'utilisteur: pitremblay
+Un utilisateur avec le nom pitremblay existe déja
+Essaie le nom d'utilisteur: pietremblay
+pietremblay peut être utilisé!
+Utilisateur 'pietremblay' à été creé avec succes

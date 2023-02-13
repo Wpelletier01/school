@@ -1,9 +1,10 @@
 # /bin/bash
-#
+
+
 # CONST
 TRUE=1
 FALSE=0
-#
+
 # le script
 main() {  
 
@@ -16,13 +17,14 @@ main() {
 
   fi 
   
-
   # s'assure qu'un seul argument est passé
   if [ $# -le 0 -o $# -ge 2 ] 
   then
+
     echo "Vous avez besoin de passé un fichier minimun en argument"
     echo "Example: dev1.sh [nom du fichier]"
     exit -1 
+
   fi
   
   # s'assure que le fichier passé existe 
@@ -32,11 +34,10 @@ main() {
     echo "Le fichier passé en argument n'existe pas"
     echo "Assurez-vous que le fichier se retrouve dans le meme dossier sinon entrer le chemin complet"
     exit -1
+
   fi 
   
-  
   nb_lines=$(cat $1 | wc -l)
- 
   
   log "$nb_lines utilisateur(s) à créer"
 
@@ -62,8 +63,11 @@ main() {
     
     if [[ " $( get_existing_user ) " =~ " ${username} " ]] 
     then 
+      
       log "Utilisateur '$username' à été creé avec succes"
+    
     else 
+      
       log "Incapable de creer l'utilisateur '$username'"
 
     fi 
@@ -96,9 +100,13 @@ is_root() {
 
   if [ "$EUID" == "0" ]
   then
+    
     echo "$TRUE"
+  
   else 
+    
     echo "$FALSE"
+  
   fi 
 
 }
@@ -106,14 +114,13 @@ is_root() {
 # retourne tout les utilisateurs présent dans la machine
 get_existing_user() {
 
-  
   list_user=$( cut -d: -f1 /etc/passwd ) 
   
   echo ${list_user[@]}
 
 }
 #
-# créer un nom d'utilisateur avec le prenom et nom passés en parametre 
+# crée un nom d'utilisateur avec le prenom et nom passés en parametre 
 get_valid_username() {
 
     
@@ -142,6 +149,7 @@ get_valid_username() {
       valid=$TRUE
 
       break
+
     fi 
 
   done
@@ -167,6 +175,7 @@ get_valid_username() {
       then
         
         log "Un utilisateur avec le nom $nuser existe déja"
+      
       else 
         
         log "le nom d'utilisateur $nuser peut être utilisé"
