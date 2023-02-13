@@ -29,6 +29,16 @@ log() {
 # le script
 main() {  
 
+  # s'assure que le script est executer avec les privileges sudo 
+  if [ $( is_root ) != "$TRUE" ]
+  then
+  
+    echo "Vous devez executer le script en tant que root"
+    exit -1
+
+  fi 
+  
+
   # s'assure qu'un seul argument est passé
   if [ $# -le 0 -o $# -ge 2 ] 
   then
@@ -78,13 +88,22 @@ main() {
 
     fi 
    
-
   done   
 
 } 
+#
+# regarde si le script est executer en tant que root user 
+is_root() {
 
-  
+  if [ "$EUID" == "0" ]
+  then
+    echo "$TRUE"
+  else 
+    echo "$FALSE"
+  fi 
 
+}
+#
 # retourne tout les utilisateurs présent dans la machine
 get_existing_user() {
 
