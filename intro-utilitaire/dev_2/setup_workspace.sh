@@ -26,15 +26,15 @@ do
   
   if [ ! -z $line ] 
   then 
-    useradd $line -d /home/workspace/$line 
+    
+    mkdir /home/workspace/$line
+    useradd $line -d /home/workspace/$line
+    cp -r filesys/$line/* /home/workspace/$line 
+    chown -R $line:$line /home/workspace/$line 
+
   fi 
 
 done < username.txt
-
-
-
-
-
 
 
 
