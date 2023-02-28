@@ -8,8 +8,8 @@ FALSE=0
 WHITESPACE="                                   "
 #
 # Script State 
+LOG_FILE="sauvegarde.log"
 VERBOSE=$FALSE
-DEBUG=$FALSE
 HOME_DIR="/home"
 USER_FILE=""
 DESTINATION="/mnt/sauvegarde"
@@ -27,19 +27,30 @@ BLUE='\x1b[34m'
 # Loggin
 #
 
-print_log() { echo -e "$1" >&2 }
+print_log() { 
+    
+    echo -e "$1" >&2 
 
-save_log() { echo -e "$1" >> "sauvegarde.log" }
+}
 
-fmt_log() { echo "$( date +'[ %y/%m/%d | %H:%M:%S ]') [ $1 ] $2" }
+save_log() { 
+    
+    echo -e "$1" >> "sauvegarde.log" 
+
+}
+
+fmt_log() { 
+    echo "$( date +'[ %y/%m/%d | %H:%M:%S ]') [ $1 ] $2" 
+    
+}
 
 
 log_status() {
 
     log=$( fmt_log "${GREEN}Status${NO_COLOR}" "${@}" )
 
-    print_log $log
-    save_log
+    print_log "$log"
+    save_log "$log"
 
 }
 
@@ -47,57 +58,73 @@ log_info() {
 
     log=$( fmt_log "${GREEN}Info${NO_COLOR}" "  ${@}" )
 
-    i
+    if [ "$VERBOSE" == "$TRUE" ]
+    then
+        
+        print_log "$log" 
+
+    fi 
+    
+    save_log "$log"
     
 
 }
 
 log_trace() {
 
-    if [ "$DEBUG" == "$TRUE" ]
+    log=$( fmt_log "${BLUE}Trace${NO_COLOR}" " ${@}" )
+
+    if [ "$VERBOSE" == "$TRUE" ]
     then
-        print_log "${BLUE}Trace${NO_COLOR}" " ${@}"
-    fi
+        
+        print_log "$log" 
+
+    fi 
+
+    save_log "$log"
 
 }
 
 log_debug() {
     
-    if [ "$DEBUG" == "$TRUE" && "$VERBOSE" == "$TRUE" ]
+    log=$( fmt_log "${CYAN}Debug${NO_COLOR}" " $@" "$TRUE" )
+
+    if [ "$VERBOSE" == "$TRUE" ]
     then
 
-        print_log "${CYAN}Debug${NO_COLOR}" " $@" "$TRUE"
-    
-    elif [ "$"]
-
+        print_log "$log"
 
     fi 
+
+    save_log "$log"
 
 }
 
 
 log_warn() {
 
-    print_log "${YELLOW}Warn${NO_COLOR}" "  ${@}"
+    log=$( fmt_log "${YELLOW}Warn${NO_COLOR}" "  ${@}" )
+    print_log "$log"
+    save_log "$log"
 
 }
 
 log_error() {
 
-    print_log "${RED}Error${NO_COLOR}" " ${@}"
-    
+    log=$( fmt_log "${RED}Error${NO_COLOR}" " ${@}" )
+    print_log "$log"
+    save_log "$log"
 
 }
 
 log_fatal() {
 
-    print_log "${RED}FATAL${NO_COLOR}" " ${@}"
+    log=$( fmt_log "${RED}FATAL${NO_COLOR}" " ${@}" )
+    print_log "$log"
+    save_log "$log"
     exit -1
 
 }
-
-
-
 #
 #
 # -------------------------------------------------------------------------------------------------
@@ -111,11 +138,7 @@ print_help() {
     Usage: dev2.sh [OPTION]
 
         -h, --help              affiche se message
-        -v, --verbose           affiche dans le terminal les logs
-        -t, --trace             active la prise en charge des trace log il seront afficher dans le terminal
-                                si -v est passer et sera dans le fichier sauvegarde.log
-        -d, --debug             active la prise en charge des debug log il seront afficher dans le terminal
-                                si -v est passer et sera dans le fichier sauvegarde.log
+        -v, --verbose           affiche les debug et trace logs dans le terminal
         -u, --users             fichier avec les nom d'utilisateur a faire la sauvegarde
         -f, --home-directory    specifier un emplacement different ou les dossiers
                                 home des employees se trouve
@@ -146,10 +169,6 @@ validate_script_args() {
                 print_help
                 exit 0;;
 
-            "-d" | "--debug-mode")
-                DEBUG=$TRUE
-                log_trace "script validation start"
-                log_debug "debug log enable";;
             
             "-v" | "--verbose")
                 VERBOSE=$TRUE;;
@@ -411,6 +430,14 @@ main() {
 
     fi 
 
+    if [ -e "$LOG_FILE" ]
+    then
+
+        rm $LOG_FILE
+      
+    fi 
+
+    touch $LOG_FILE
 
     if [ $# -lt 1 ]
     then
@@ -462,3 +489,5 @@ main() {
 
 
 main $@
+
+
