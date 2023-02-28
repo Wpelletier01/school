@@ -8,11 +8,11 @@ FALSE=0
 WHITESPACE="                                   "
 #
 # Script State 
-DEBUG_MODE=$FALSE
+VERBOSE=$FALSE
+DEBUG=$FALSE
 HOME_DIR="/home"
 USER_FILE=""
 DESTINATION="/mnt/sauvegarde"
-SCRIPT_LOCATION=""
 #
 # Color Value
 RED='\033[0;31m'
@@ -27,28 +27,34 @@ BLUE='\x1b[34m'
 # Loggin
 #
 
-print_log() {
+print_log() { echo -e "$1" >&2 }
 
-    echo -e "$( date +'[ %y/%m/%d | %H:%M:%S ]') [ $1 ] $2 " >&2
+save_log() { echo -e "$1" >> "sauvegarde.log" }
 
-}
+fmt_log() { echo "$( date +'[ %y/%m/%d | %H:%M:%S ]') [ $1 ] $2" }
 
 
 log_status() {
 
-    print_log "${GREEN}Status${NO_COLOR}" "${@}"
+    log=$( fmt_log "${GREEN}Status${NO_COLOR}" "${@}" )
+
+    print_log $log
+    save_log
 
 }
 
 log_info() {
 
-    print_log "${GREEN}Info${NO_COLOR}" "  ${@}"
+    log=$( fmt_log "${GREEN}Info${NO_COLOR}" "  ${@}" )
+
+    i
+    
 
 }
 
 log_trace() {
 
-    if [ "$DEBUG_MODE" == "$TRUE" ]
+    if [ "$DEBUG" == "$TRUE" ]
     then
         print_log "${BLUE}Trace${NO_COLOR}" " ${@}"
     fi
@@ -57,9 +63,14 @@ log_trace() {
 
 log_debug() {
     
-    if [ "$DEBUG_MODE" == "$TRUE" ]
+    if [ "$DEBUG" == "$TRUE" && "$VERBOSE" == "$TRUE" ]
     then
-        print_log "${CYAN}Debug${NO_COLOR}" " $@"
+
+        print_log "${CYAN}Debug${NO_COLOR}" " $@" "$TRUE"
+    
+    elif [ "$"]
+
+
     fi 
 
 }
@@ -97,20 +108,30 @@ print_help() {
 
 
     echo "
-    
     Usage: dev2.sh [OPTION]
 
         -h, --help              affiche se message
-        -d, --debug-mode        active l'afichage des debug log
-        -u, --users             fichier avec les nom d'utilisateur a faire la
-                                sauvegarde
+        -v, --verbose           affiche dans le terminal les logs
+        -t, --trace             active la prise en charge des trace log il seront afficher dans le terminal
+                                si -v est passer et sera dans le fichier sauvegarde.log
+        -d, --debug             active la prise en charge des debug log il seront afficher dans le terminal
+                                si -v est passer et sera dans le fichier sauvegarde.log
+        -u, --users             fichier avec les nom d'utilisateur a faire la sauvegarde
         -f, --home-directory    specifier un emplacement different ou les dossiers
                                 home des employees se trouve
-        
     "
 
 
 }
+
+get_file_size() {
+
+    size=$( stat -c %s "$1" )
+
+    echo $size
+
+}
+
 
 
 validate_script_args() {
@@ -126,9 +147,12 @@ validate_script_args() {
                 exit 0;;
 
             "-d" | "--debug-mode")
-                DEBUG_MODE=$TRUE
+                DEBUG=$TRUE
                 log_trace "script validation start"
                 log_debug "debug log enable";;
+            
+            "-v" | "--verbose")
+                VERBOSE=$TRUE;;
 
             "-u" | "--users")
 
@@ -166,14 +190,26 @@ validate_script_args() {
 
     done 
 
-    log_trace "finit la validation des arguments"
+
+    if [ "$USER_FILE" == "" ]
+    then
+        log_fatal "vous n'avez pas passer de fichier contenant les nom d'utilisateur. voir dev.sh -h pour plus d'info"
+
+    elif [ ! -e "$USER_FILE" ]
+    then 
+
+        log_fatal "le fichier des nom d'utilisateur n'existe pas, assurer vous que son chemin soit valide"
+
+    fi 
+
+    log_trace "la validation des arguments du script est finit"
 
 }
 
 
 get_all_path() {
     
-    log_trace "commencer a ramasser tout les chemin possible dans le home dossier ${@}"
+    log_trace "commence a ramasser tout les chemin possible dans le home dossier ${@}"
 
     files=()
     directory=("$@")
@@ -241,7 +277,9 @@ get_all_path() {
     paths=( "${directory[@]}" "${files[@]}" )
    
 
-    log_info "dossier: $1\n${WHITESPACE}   nombre de dossier: $(( ${#directory[@]} - 1 ))\n${WHITESPACE}   nombre de fichier: ${#files[@]}"
+    log_info "stat dossier: $1
+    ${WHITESPACE} - nombre de dossier: $(( ${#directory[@]} - 1 ))
+    ${WHITESPACE} - nombre de fichier: ${#files[@]}"
 
     echo "${paths[@]}"
 
@@ -255,71 +293,103 @@ save_dir() {
     
     paths=$2
     name=$1
-    root="$HOME_DIR/$name"
-
-    fSuccess=0
-    fFailure=0
-    dSuccess=0
-    dFailure=0
-
-    destination="$DESTINATION/$1" 
     
-    if [ ! -e $destination ]
-    then 
+    userdir="$HOME_DIR/$name"
 
-        log_debug "premiere sauvegarde pour $name"
-        mkdir -p $destination
+    if [ ! -e $userdir ]
+    then
+
+        log_error "le dossier de l'utilisateur n'existe pas, aucune sauvegarde sera fait"
+
+    else 
+        fSuccess=0
+        fFailure=0
+        dSuccess=0
+        dFailure=0
+
+
+        destination="$DESTINATION/$1" 
+
+        if [ ! -e $destination ]
+        then 
+
+            log_debug "premiere sauvegarde pour $name"
+            mkdir -p $destination
+
+        fi 
+
+        save_dest=$destination/$( date +"save-%y-%m-%d.tar" )
+
+        tar -cf $save_dest >/dev/null 2>&1
+
+        for path in ${paths[@]}
+        do 
+
+            relativePath=${path#${userdir}}
+
+            if [ ! -z "$relativePath" ]
+            then 
+
+                if [ -d $path ]
+                then
+
+                    if tar --directory=$userdir -rf $save_dest "${relativePath:1}" >/dev/null 2>&1; then
+
+                        log_info "transfert du dossier: '$path' reussie"
+                        dSuccess=$(( dSuccess + 1 ))
+
+                    else 
+
+                        log_error "tranfert du dossier: '$path' echoue"
+                        dFailure=$(( dFailure + 1 ))
+
+                    fi 
+
+
+                elif [ -f $path ]
+                then
+
+                    if tar -C $userdir -rf $save_dest "${relativePath:1}" >/dev/null 2>&1; then 
+
+                        log_info "transfert du fichier: '$path' reussie"
+                        fSuccess=$(( fSuccess + 1 ))
+
+                    else
+
+                        log_info "transfert du dossier: '$path' a echoue"
+                        fFailure=$(( fFailure + 1 ))
+
+                    fi 
+                fi
+            fi
+
+        done
+
+        log_info "copie du contenu du dossier: '$userdir' finis
+        stats:
+            - fichier -> $fSuccess reussie, $fFailure echouer
+            - dossier -> $dSuccess reussie, $dFailure echouer"
+
+        log_info "taille de l'achive avant la compression: $( get_file_size $save_dest )"
+
+        if ! gzip -9 $save_dest >/dev/null 2>&1;
+        then 
+
+            log_error "la compression de l'archive '$save_dest' a echoue"
+            log_warn  "l'archive '$save_dest 'ne sera pas compresser"
+
+        else 
+            log_info "taille de l'archive apres la compression: $( get_file_size $save_dest.gz )"
+
+        fi
+
+
 
     fi 
 
-    save_dest=$destination/$( date +"save-%y-%m-%d.tar" )
-    
-    touch $save_dest
-
-    for path in ${paths[@]}
-    do 
-
-        rpath=${path#${root}}
-    
-
-        if [ ! -z "$rpath" ]
-        then 
-
-            if [ -d $path ]
-            then
-
-                if tar --directory=$root -rf $save_dest "${rpath:1}" >& /dev/null; then
-
-                    log_info "transfert du dossier: '$path' reussie"
-                    dSuccess=$(( dSuccess + 1 ))
-
-                else 
-
-                    log_error "tranfert du dossier: '$path' echoue"
-                    dFailure=$(( dFailure + 1 ))
-
-                fi 
 
 
-            elif [ -f $path ]
-            then
-
-                if tar -C $root -rf $save_dest "${rpath:1}"; then 
-
-                    log_info "transfert du dossier: '$path' reussie"
-                    fSuccess=$(( fSuccess + 1 ))
-
-                else
-
-                    log_info "transfert du dossier: '$path' a echoue"
-                    fFailure=$(( fFailure + 1 ))
-
-                fi 
-            fi
-        fi
-
-    done 
-
+    log_trace "sauvegarde de l'utilisateur $name finit"
 
 }
 
@@ -358,16 +428,34 @@ main() {
 
         log_debug "destination n'existe pas, il sera creer"
 
-    fi 
+        mkdir $DESTINATION
 
+    fi 
 
     validate_script_args $@
 
-    paths=$( get_all_path "/home/workspace/ptremblay" )
     
-    save_dir "ptremblay" "${paths[@]}"
+    while read -r line;
+    do
+        log_debug "utilisateur: '$line'"
 
-    log_status "finish"
+        if ! id "$line" >/dev/null 2>&1;
+        then
+            
+            log_warn "l'utilisateur '$line' n'existe pas, il sera passe"
+        
+        else
+
+            paths=$( get_all_path "$HOME_DIR/$line" )
+
+            save_dir "$line" "${paths[@]}"
+
+
+        fi 
+
+    done < "$USER_FILE"
+
+    log_status "execution finit"
 
 }
 
