@@ -1,0 +1,20 @@
+Vous travaillez pour l'Agence Yves Foulay, chirurgiens dentistes, depuis quelques temps déjà et votre patron 
+vous demande de créer un script qui fera une sauvegarde complète du dossier personnel tous les l'utilisateurs. 
+Vous devez sauvegarder l'entièreté du dossier (fichiers cachés et sous dossiers inclus!). La destination de la 
+sauvegarde sera le dossier /mnt/sauvegarde/nom_de_l'utilisateur. Utilisez les noms d’utilisateurs créés lors du devoir #1.
+
+Les fichiers sauvegardés doivent conserver leurs permissions (lecture, écriture, exécution, propriétaires, groupe).
+Votre script devra s’assurer que chaque fichier à bien été copier. Les sauvegardes, réussies ou non, devront être 
+consignées dans un fichier sauvegarde.log avec un horodatage de la sauvegarde.
+
+Pour réaliser la sauvegarde, utilisez la commande tar.
+
+Exemples:
+
+    Sauvegarde du fichier : image1.jpg réussie 15-09-18-14:03:55
+    Sauvegarde du fichier : texte2.txt échoué 15-09-18-14:04:11
+
+Comme vous savez que votre patron aime vous affecter à différentes tâches,
+il y a de fortes chances que d'autres techniciens seront appeler à modifier votre script.
+Il vous demande donc de bien commenter votre travail. De même, pour faciliter la lecture et la compréhension de vos collègues,
+vous vous assurez de respecter les règles générales d'indentation.
