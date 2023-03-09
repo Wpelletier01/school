@@ -1,30 +1,30 @@
 
 # -------------------------------------------------------------------------------------------------
-# Déclaration
+# déclaration
 #
-# Constante
-TRUE=1
-FALSE=0
-WHITESPACE="                                   "
+# constante
+true=1
+false=0
+whitespace="                                   "
 #
-# Propriété du script
-LOG_FILE="sauvegarde.log"
-VERBOSE=$FALSE
-HOME_DIR="/home"
-USER_FILE=""
-SAVE_DIR="/mnt/sauvegarde"
+# propriété du script
+log_file="sauvegarde.log"
+verbose=$false
+home_dir="/home"
+user_file=""
+save_dir="/mnt/sauvegarde"
 #
-# ASCII Couleur
-RED='\033[0;31m'
-GREEN='\x1b[32m'
-CYAN='\x1b[36m'
-YELLOW='\x1b[33m'
-NO_COLOR='\033[0m'
-BLUE='\x1b[34m'
+# ascii couleur
+red='\033[0;31m'
+green='\x1b[32m'
+cyan='\x1b[36m'
+yellow='\x1b[33m'
+no_color='\033[0m'
+blue='\x1b[34m'
 #
 #
 # -------------------------------------------------------------------------------------------------
-# Fonction pour le logging
+# fonction pour le logging
 #
 
 # affiche au terminal le log passé 
@@ -39,7 +39,7 @@ print_log() {
 save_log() { 
     
 
-    ( echo "$1" >> "$LOG_FILE" ) 2>/dev/null
+    ( echo "$1" >> "$log_file" ) 2>/dev/null
 
 }
 
@@ -48,7 +48,7 @@ save_log() {
 # $2 -> message
 #
 # exemple:
-#       [ 23/02/28 | 20:14:17 ] [ Info ]   transfert du dossier: '/foo/bar/' reussie
+#       [ 23/02/28 | 20:14:17 ] [ info ]   transfert du dossier: '/foo/bar/' reussie
 #       
 fmt_log() {
 
@@ -60,9 +60,9 @@ fmt_log() {
 log_status() {
 
     # avec la valeur de couleur ascii pour le terminal
-    log=$( fmt_log "${GREEN}Status${NO_COLOR}" "${@}" )
+    log=$( fmt_log "${green}status${no_color}" "${@}" )
     # sans la valeur de couleur ascci pour le fichier
-    slog=$( fmt_log "Status" "${@}" )
+    slog=$( fmt_log "status" "${@}" )
     # log de type status sont toujours afficher à l'écran
     print_log "$log"
     # enregistre au fichier des log
@@ -74,16 +74,11 @@ log_status() {
 log_info() {
 
     # avec la valeur de couleur ascii pour le terminal
-    log=$( fmt_log "${GREEN}Info${NO_COLOR}" "  ${@}" )
+    log=$( fmt_log "${green}info${no_color}" "  ${@}" )
     # sans la valeur de couleur ascci pour le fichier
-    slog=$( fmt_log "Info" "  ${@}" )
-    # regarde si le mode verbose a été activé pour afficher le log
-    if [ "$VERBOSE" == "$TRUE" ]
-    then
-        
-        print_log "$log" 
-
-    fi 
+    slog=$( fmt_log "info" "  ${@}" )
+    # log de type info sont toujours affiché au terminal  
+    print_log "$log" 
     # enregistre au fichier des log
     save_log "$slog"
     
@@ -93,11 +88,11 @@ log_info() {
 log_trace() {
 
     # avec la valeur de couleur ascii pour le terminal
-    log=$( fmt_log "${BLUE}Trace${NO_COLOR}" " ${@}" )
+    log=$( fmt_log "${blue}trace${no_color}" " ${@}" )
     # sans la valeur de couleur ascci pour le fichier
-    slog=$( fmt_log "Trace" " ${@}" )
+    slog=$( fmt_log "trace" " ${@}" )
     # regarde si le mode verbose a été activé pour afficher le log
-    if [ "$VERBOSE" == "$TRUE" ]
+    if [ "$verbose" == "$true" ]
     then
         
         print_log "$log" 
@@ -112,11 +107,11 @@ log_trace() {
 log_debug() {
     
     # avec la valeur de couleur ascii pour le terminal
-    log=$( fmt_log "${CYAN}Debug${NO_COLOR}" " $@" "$TRUE" )
+    log=$( fmt_log "${cyan}debug${no_color}" " $@" "$true" )
     # sans la valeur de couleur ascci pour le fichier
-    slog=$( fmt_log "Debug" " $@" "$TRUE" )
+    slog=$( fmt_log "debug" " $@" "$true" )
     # regarde si le mode verbose a été activé pour afficher le log
-    if [ "$VERBOSE" == "$TRUE" ]
+    if [ "$verbose" == "$true" ]
     then
 
         print_log "$log"
@@ -131,9 +126,9 @@ log_debug() {
 log_warn() {
 
     # avec la valeur de couleur ascii pour le terminal
-    log=$( fmt_log "${YELLOW}Warn${NO_COLOR}" "  ${@}" )
+    log=$( fmt_log "${yellow}warn${no_color}" "  ${@}" )
     # sans la valeur de couleur ascci pour le fichier
-    slog=$( fmt_log "Warn" "  ${@}" )
+    slog=$( fmt_log "warn" "  ${@}" )
     # log de type warn sont toujours afficher à l'écran
     print_log "$log"
     # enregistre au fichier des log
@@ -144,9 +139,9 @@ log_warn() {
 # créer un log de type error avec le message passée
 log_error() {
 
-    log=$( fmt_log "${RED}Error${NO_COLOR}" " ${@}" )
+    log=$( fmt_log "${red}error${no_color}" " ${@}" )
     # sans la valeur de couleur ascci pour le fichier
-    slog=$( fmt_log "Error" " ${@}" )
+    slog=$( fmt_log "error" " ${@}" )
     # log de type error sont toujours afficher à l'écran
     print_log "$log"
     # enregistre au fichier des log
@@ -158,9 +153,9 @@ log_error() {
 log_fatal() {
 
     # avec la valeur de couleur ascii pour le terminal
-    log=$( fmt_log "${RED}FATAL${NO_COLOR}" " ${@}" )
+    log=$( fmt_log "${red}fatal${no_color}" " ${@}" )
     # sans la valeur de couleur ascci pour le fichier
-    slog=$( fmt_log "FATAL" " ${@}" )
+    slog=$( fmt_log "fatal" " ${@}" )
     # log de type fatal sont toujours afficher à l'écran
     print_log "$log"
     save_log "$slog"
@@ -180,13 +175,13 @@ print_help() {
 
 
     echo "
-    Usage: dev2.sh [OPTION]
+    usage: dev2.sh [option]
 
         -h, --help              affiche se message
         -v, --verbose           affiche les debug et trace logs dans le terminal
         -u, --users             fichier avec les nom d'utilisateur à faire la sauvegarde
-        -f, --home-directory    specifier un emplacement different ou les dossiers
-                                home des employées se trouve
+        -f, --home-directory    specifier un emplacement different où les dossiers
+                                home des utilisateurs se trouve
     "
 
 
@@ -207,7 +202,7 @@ validate_script_args() {
     if [ $# -lt 1 ]
     then
 
-        log_warn "aucun argument passer au script"
+        log_warn "aucun argument à été passé au script"
         
         print_help
 
@@ -226,7 +221,7 @@ validate_script_args() {
                 exit 0;;
             # active le mode verbose            
             "-v" | "--verbose")
-                VERBOSE=$TRUE;;
+                verbose=$true;;
             # assigne le fichier qui contient le nom des utilisateurs
             "-u" | "--users")
                 # passe au prochain argument pour capture le chemin du fichier
@@ -239,17 +234,28 @@ validate_script_args() {
                    
                 fi 
 
-                USER_FILE="$1";;
+                user_file="$1";;
             # assigne un dossier home différent que /home
             "-f" | "--home-directory")
+                
                 # passe au prochain argument pour capture le chemin du fichier
                 shift
-                # regarde que le chemin est vers un dossier et existe
-                if [ -d "$1" ] && [ -e "$1" ]
+
+                # pour empecher que le chemin est un double backslash
+                if [ "${1: -1}" == "/" ]
                 then 
-                    HOME_DIR=$1
+                    h="${1: 0:-1}"
                 else 
-                    log_fatal "chemin invalide: $1 assurer de passer un chemin vers un dossier existant"
+                    h="$1"
+                fi 
+
+
+                # regarde que le chemin est vers un dossier et existe
+                if [ -d "$h" ] && [ -e "$h" ]
+                then 
+                    home_dir=$h
+                else 
+                    log_fatal "chemin invalide: $h assurer de passer un chemin vers un dossier existant"
                     
                 fi;;
             # tout autre parametre invalide passé
@@ -267,7 +273,7 @@ validate_script_args() {
 
 
     # s'assure qu'un fichier contenant les noms des utilisateurs existe
-    if [ "$USER_FILE" == "" ]
+    if [ "$user_file" == "" ]
     then
 
         log_fatal "vous n'avez pas passé de fichier contenant les noms d'utilisateurs. voir dev.sh -h pour plus d'info"
@@ -287,10 +293,10 @@ get_all_path() {
     files=()
     directory=("$@")
     
-    finish=$FALSE
+    finish=$false
     i=0 
 
-    while [ "$finish" != "$TRUE" ]
+    while [ "$finish" != "$true" ]
     do 
         
         if [ $i -ge ${#directory[@]} ]
@@ -298,11 +304,11 @@ get_all_path() {
         
             log_trace "tout les dossiers et sous dossiers ont été visités"
         
-            finish=$TRUE
+            finish=$true
     
         else 
 
-            found=$FALSE
+            found=$false
 
             log_debug "dossier actuelle: ${directory[i]}"
 
@@ -321,7 +327,7 @@ get_all_path() {
                     if [ -d $entry ] && [[ ! " ${directory[*]} " =~ " ${entry} " ]] 
                     then
 
-                        found=$TRUE
+                        found=$true
                         log_debug "dossier trouvé: $entry"
                         # ajoute le dossier à la fin des autres pour etre visité 
                         # plus tard
@@ -331,7 +337,7 @@ get_all_path() {
                     elif [ -f $entry ] && [[ ! " ${files[*]} " =~ " ${entry} " ]] 
                     then 
 
-                        found=$TRUE
+                        found=$true
                         log_debug "fichier trouvé: $entry"
                         files+=("$entry")
 
@@ -339,7 +345,7 @@ get_all_path() {
                     elif [ -h $entry ] && [[ ! " ${files[*]} " =~ " ${entry} " ]]
                     then
 
-                        found=$TRUE
+                        found=$true
                         log_debug "lien symbolique trouvé: $entry"
                         files+=("$entry")
 
@@ -350,7 +356,7 @@ get_all_path() {
 
             # si la valeur '$found' n'a pas été changé, sa veux dire que tout les élément du 
             # dossier présent ont été ajouté et donc on peut passé au prochain dossier  
-            if [ "$found" != "$TRUE" ]
+            if [ "$found" != "$true" ]
             then
           
                 log_debug "collecter tout le contenu du dossier: ${directory[i]}"
@@ -366,8 +372,8 @@ get_all_path() {
    
 
     log_info "stat dossier: $1
-    ${WHITESPACE} - nombre de dossier(s): $(( ${#directory[@]} - 1 ))
-    ${WHITESPACE} - nombre de fichier(s): ${#files[@]}"
+    ${whitespace} - nombre de dossier(s): $(( ${#directory[@]} - 1 ))
+    ${whitespace} - nombre de fichier(s): ${#files[@]}"
 
     echo "${paths[@]}"
 
@@ -382,7 +388,7 @@ save_dir() {
     
     paths=$2
     name=$1
-    userdir="$HOME_DIR/$name"
+    userdir="$home_dir/$name"
     
     # s'assure que le dossier de l'utilisateur existe
     if [ ! -e $userdir ]
@@ -393,13 +399,13 @@ save_dir() {
     else 
 
         # compteur dans le but d'affichage
-        fSuccess=0
-        fFailure=0
-        dSuccess=0
-        dFailure=0
+        fsuccess=0
+        ffailure=0
+        dsuccess=0
+        dfailure=0
 
 
-        destination="$SAVE_DIR/$1" 
+        destination="$save_dir/$1" 
 
         # s'assure que la destination de la sauvegarde existe
         if [ ! -e $destination ]
@@ -417,40 +423,40 @@ save_dir() {
         for path in ${paths[@]}
         do 
 
-            relativePath=${path#${userdir}}
+            relativepath=${path#${userdir}}
 
-            if [ ! -z "$relativePath" ]
+            if [ ! -z "$relativepath" ]
             then 
                 # pour les chemin pointant un dossier
                 if [ -d $path ]
                 then
                     # copie le dossier vers l'archive sans le dossier root du chemin
                     # exemple: /home/bob/chemin/vers/dossier/ sera /chemin/vers/dossier/
-                    if tar --directory=$userdir -rf $save_dest "${relativePath:1}" >/dev/null 2>&1; then
+                    if tar --directory=$userdir -rf $save_dest "${relativepath:1}" >/dev/null 2>&1; then
 
                         log_info "transfert du dossier: '$path' à réussie"
-                        dSuccess=$(( dSuccess + 1 ))
+                        dsuccess=$(( dsuccess + 1 ))
 
                     else 
 
                         log_error "tranfert du dossier: '$path' à echoué"
-                        dFailure=$(( dFailure + 1 ))
+                        dfailure=$(( dfailure + 1 ))
 
                     fi 
                 # pour les chemin pointant un fichier
-                elif [ -f $path ]
+                elif [ -f "$path" ]
                 then
                     # copie le fichier vers l'archive sans le dossier root du chemin
                     # exemple: /home/bob/chemin/vers/fichier/ sera /chemin/vers/fichier/
-                    if tar -C $userdir -rf $save_dest "${relativePath:1}" >/dev/null 2>&1; then 
+                    if tar --directory=$userdir -rf $save_dest "${relativepath:1}" >/dev/null 2>&1; then 
 
                         log_info "transfert du fichier: '$path' réussie"
-                        fSuccess=$(( fSuccess + 1 ))
+                        fsuccess=$(( fsuccess + 1 ))
 
                     else
 
-                        log_info "transfert du dossier: '$path' à échoué"
-                        fFailure=$(( fFailure + 1 ))
+                        log_info "transfert du fichier: '$path' à échoué"
+                        ffailure=$(( ffailure + 1 ))
 
                     fi 
                 # pour les chemin pointant un lien symbolique
@@ -464,24 +470,24 @@ save_dir() {
 
                         # copie le lien symbolique vers l'archive sans le dossier root du chemin
                         # exemple: /home/bob/chemin/vers/lien/ sera /chemin/vers/lien/
-                        if tar -C $userdir -rf $save_dest "${relativePath:1}" >/dev/null 2>&1;
+                        if tar --directory=$userdir -rf $save_dest "${relativepath:1}" >/dev/null 2>&1;
                         then     
                             log_info "transfert du lien symbolique: $path à réussi"
 
-                            fSuccess=$(( fSuccess + 1))
+                            fsuccess=$(( fsuccess + 1))
 
                         else
 
                             log_info "transfert du lien symbolique: $path à echoué"
 
-                            fFailure$(( fFailure + 1 ))
+                            ffailure$(( ffailure + 1 ))
 
                         fi 
 
                     else 
 
                         log_error "'$path' est un invalide lien symbolique. il va etre ignoré"
-                        fFailure=$(( fFailure + 1 ))
+                        ffailure=$(( ffailure + 1 ))
                     
                     fi     
                 fi
@@ -491,8 +497,8 @@ save_dir() {
 
         log_info "copie du contenu du dossier: '$userdir' finis
         stats:
-            - fichier -> $fSuccess réussie, $fFailure échoué
-            - dossier -> $dSuccess réussie, $dFailure échoué"
+            - fichier -> $fsuccess réussie, $ffailure échoué
+            - dossier -> $dsuccess réussie, $dfailure échoué"
 
         log_info "la taille de l'achive: $( get_file_size $save_dest )"
 
@@ -516,7 +522,7 @@ save_dir() {
 #
 #
 # -------------------------------------------------------------------------------------------------
-# Le script
+# le script
 # 
 
 main() {
@@ -533,23 +539,23 @@ main() {
 
     
     # suprime le fichier avec les logs si existe déja
-    if [ -e "$LOG_FILE" ]
+    if [ -e "$log_file" ]
     then
 
-        rm $LOG_FILE
+        rm $log_file
       
     fi 
 
     # crée le fichier des logs
-    touch $LOG_FILE
+    touch $log_file
 
     # s'assure que le dossier des sauvegarde existe
-    if [ ! -d $SAVE_DIR ]
+    if [ ! -d $save_dir ]
     then
 
         log_debug "la destination des sauvegarde n'existe pas, il sera creer"
 
-        mkdir $SAVE_DIR
+        mkdir $save_dir
 
     fi 
 
@@ -560,25 +566,37 @@ main() {
     while read -r line;
     do
 
-        log_debug "traitement de l'utilisateur: '$line' à commencée"
+        # s'assure que la ligne n'est pas vide  
+        if [ ! -z "$line"  ]
+        then 
+            log_debug "traitement de l'utilisateur: '$line' à commencée"
         
-        # s'assure que l'utilisateur existe
-        if ! id "$line" >/dev/null 2>&1;
-        then
+            # s'assure que l'utilisateur existe
+            if ! id "$line" >/dev/null 2>&1;
+            then
             
-            log_warn "l'utilisateur '$line' n'existe pas, il sera ignoré"
+                log_warn "l'utilisateur '$line' n'existe pas, il sera ignoré"
         
-        else
+            else
+            
+                # assurrer que le dossier home de l'utilisateur existe
+                if [ ! -e "$home_dir/$line" ]
+                then 
 
-            # capture tout les chemins possible de son dossier
-            paths=$( get_all_path "$HOME_DIR/$line" )
-            # créé une archive compressé
-            save_dir "$line" "${paths[@]}"
-
-
+                    log_error "le dossier home de l'utilisateur $line n'existe pas: '$home_dir/$line'"
+                else
+                
+                    log_debug "le dossier home de l'utilisateur $line existe: '$home_dir/$line' "
+                
+                    # capture tout les chemins possible de son dossier
+                    paths=$( get_all_path "$home_dir/$line" )
+                    # créé une archive compressé
+                    save_dir "$line" "${paths[@]}"
+                fi 
+            fi
         fi 
 
-    done < "$USER_FILE"
+    done < "$user_file"
 
     log_status "execution terminé"
 
