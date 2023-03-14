@@ -5,13 +5,15 @@ from subprocess import Popen,PIPE
 import sys 
 import os
 import pandas as pd 
+import random 
+import string
 
 WINDOW_BIN="C:\Windows\System32\powershell.exe"
 
 # Seulement pour tester
 LINUX_BIN="/usr/bin/pwsh"
 
-COLUMN_NAME= [ "prenom", "nom", "groupe"]
+COLUMN_NAME= [ "prenom", "nom", "groupe","username"]
 
 
 
@@ -21,11 +23,27 @@ class AdUser:
     nom:str 
     group:str
     dpasswd:str
+    username:str 
 
 
-    def fmt_name(self):
+    def fullname(self):
 
         return f"{self.prenom} {self.nom}"
+
+    def ps_cmd_parameter(self) -> str:
+        
+        return f"""$parm = @{{
+	        "Name" = "{self.fullname()}";  
+	        "GivenName" = "{self.prenom}"; 
+ 	        "Surname" = "{self.nom}";
+	        "DisplayName" = "{self.fullname()}" ;
+ 	        "SamAccountName" = "{self.username}"; 
+	        "UserPrincipalName" = "{self.username}@jouke.com";
+	        "AccountPassword" = $(ConvertTo-SecureString "{self.dpasswd}" -AsPlainText -Force);
+	        "Enabled" = $True	
+        }}"""
+
+    
 
 
 @dataclass
@@ -35,10 +53,8 @@ class PsOutput:
 
 
 
+
 def execute(prompt:str) -> PsOutput:
-
-
-  
 
 
     if sys.platform == "linux":
@@ -55,8 +71,6 @@ def execute(prompt:str) -> PsOutput:
     
 
     cmd = prompt.split(" ")
-
-
 
 
     output = Popen(cmd,stdout=PIPE,stderr=PIPE).communicate()
@@ -121,6 +135,14 @@ def validate_column(columns:list) -> bool:
     return all( item in columns for item in COLUMN_NAME)    
 
 
+def gen_random_passwd() -> str:
+
+    n = random.randint(7,9)
+
+    return "".join(random.choice(string.ascii_letters + string.digits ) for _ in range(n))
+
+
+
 
 def collect_users(fp:str) -> list[AdUser]:
 
@@ -132,22 +154,22 @@ def collect_users(fp:str) -> list[AdUser]:
         sys.exit(-1)
 
     
-    if "mdp" in data.columns:
-        return [
-            AdUser(fname,lname,group,mdp) for fname,lname,group,mdp in zip(data['prenom'],data['nom'],data['groupe'],data["mdp"])]  
+    if not "mdp" in data.columns:
+        print("le fichier ne contient pas des mot de passe par defaut, on va en generer")
+        
+        mdp = []
 
-    print("le fichier ne contient pas des mot de passe par defaut, on va en generer")
+        for _ in range(len(data["nom"])):
 
-    users = []
+            mdp.append(gen_random_passwd()) 
 
-    for fname,lname,group in zip(data['prenom'],data['nom'],data['groupe']):
+        data["mdp"] = mdp
 
-        #TODO: gen password
-        mdp = ""
+        data.to_excel(fp)
 
-        users.append(AdUser(fname,lname,group,mdp))
-
-    return users 
+       
+    return [AdUser(fname,lname,group,mdp,uname) for fname,lname,group,mdp,uname in zip(data['prenom'],data['nom'],data['groupe'],data["mdp"],data['username'])]  
+   
 
 
 
@@ -165,24 +187,40 @@ def main():
     users = collect_users(arg1)
     
 
+    for user in users:
+        
+        output = execute(user.ps_cmd_parameter())
+
+        if output.fail:
+        
+            print(f"la declaration du parametre @parm a echoue\n\tCause:\n{output.output} ")
+            sys.exit(-1)
+
+        output = execute("New-ADUser @parm")
+
+        if output.fail:
+
+            print(f"la creation de l'utilisateur {user.fullname()} a echoue\n\tCause:\n{output.output}")
+            print("il sera skipper")
+
+        else:
+            print(f"creation de l'utilisateur '{user.fullname()}'a reussie")
 
 
+    print("completer")
 
 
 def tester():
-
-    data = collect_users("user-info-shrinked.xls")
     
-    
+    mdp = gen_random_passwd()
+    print(mdp)
 
-
-    print(data)
 
 
 
 if __name__ == "__main__":
         
-    # main()
+    main()
 
-    tester()
+    #tester()
 
